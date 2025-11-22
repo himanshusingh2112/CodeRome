@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react-swc'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5000,
+    // Use Vite default (5173) to avoid colliding with backend on 5000
+    port: 5173,
   },
 })

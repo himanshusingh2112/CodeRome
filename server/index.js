@@ -149,8 +149,10 @@ app.post("/compile", async (req, res) => {
       script: code,
       language: language,
       versionIndex: languageConfig[language].versionIndex,
-      clientId: process.env.jDoodle_clientId,
-      clientSecret: process.env.kDoodle_clientSecret,
+      // Use environment variables with the expected names
+      clientId: process.env.JDoodle_ClientId || process.env.JDoodle_ClientID,
+      clientSecret:
+        process.env.JDoodle_ClientSecret || process.env.JDoodle_ClientSecret,
     });
 
     res.json(response.data);
