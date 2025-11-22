@@ -34,7 +34,7 @@ It allows multiple users to join a shared coding room, write code together, run 
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Rsharma-6/CodeRome
+git clone https://github.com/himanshusingh2112/CodeRome
 cd CodeRome
 ```
 
