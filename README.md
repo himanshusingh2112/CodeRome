@@ -77,7 +77,7 @@ npm run dev
 ```
 
 #### Then open your browser and visit:
-👉 http://localhost:5173
+👉 https://code-rome-kappa.vercel.app/
 
 ### How to Use
 
