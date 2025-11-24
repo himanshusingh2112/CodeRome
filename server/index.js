@@ -7,6 +7,13 @@ const cors = require("cors");
 const axios = require("axios");
 const server = http.createServer(app);
 require("dotenv").config();
+// Global error handlers to surface uncaught exceptions/rejections in logs
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err && err.stack ? err.stack : err);
+});
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection:", reason);
+});
 const docs = new Map(); // Map (or object) storing all document updates per room.
 const ROOM_LIMIT = 5; // max users per room
 
@@ -143,22 +150,46 @@ io.on("connection", (socket) => {
 
 app.post("/compile", async (req, res) => {
   const { code, language } = req.body;
+  console.log("/compile called with language=", language);
+
+  if (!code || typeof code !== "string" || !code.trim()) {
+    console.warn("/compile: empty code received");
+    return res.status(400).json({ error: "Code is required" });
+  }
+
+  if (!language || !languageConfig[language]) {
+    console.warn("/compile: unsupported or missing language:", language);
+    return res.status(400).json({ error: "Unsupported or missing language" });
+  }
 
   try {
+    const jdClientId = process.env.JDoodle_ClientId || process.env.JDoodle_ClientID || process.env.JDoodle_Clientid || process.env.JDoodle_Client_ID;
+    const jdClientSecret = process.env.JDoodle_ClientSecret || process.env.JDoodle_ClientSecret || process.env.JDoodle_Client_Secret;
+
+    if (!jdClientId || !jdClientSecret) {
+      console.error("/compile: JDoodle credentials missing. Check server/.env");
+      return res.status(500).json({ error: "Server missing JDoodle credentials" });
+    }
+
+    console.log("/compile: calling JDoodle execute API (language=", language, ")");
+
     const response = await axios.post("https://api.jdoodle.com/v1/execute", {
       script: code,
       language: language,
       versionIndex: languageConfig[language].versionIndex,
-      // Use environment variables with the expected names
-      clientId: process.env.JDoodle_ClientId || process.env.JDoodle_ClientID,
-      clientSecret:
-        process.env.JDoodle_ClientSecret || process.env.JDoodle_ClientSecret,
+      clientId: jdClientId,
+      clientSecret: jdClientSecret,
     });
 
+    console.log("/compile: JDoodle response status=", response.status);
+    // JDoodle returns an object with `output` field; forward whole response
     res.json(response.data);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to compile code" });
+    console.error("/compile: error calling JDoodle:",
+      error.response ? error.response.data : error.message || error
+    );
+    const message = error.response?.data?.error || error.message || "Failed to compile code";
+    res.status(500).json({ error: message });
   }
 });
 
