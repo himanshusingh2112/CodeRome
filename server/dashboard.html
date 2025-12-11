@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rooms Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h2 { margin-bottom: 5px; }
+    ul { list-style-type: none; padding-left: 0; }
+    li { padding: 2px 0; }
+    .room { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Connected Users per Room</h1>
+  <div id="rooms">Loading...</div>
+
+  <script>
+    async function fetchRooms() {
+      try {
+        const res = await fetch("/rooms");
+        const data = await res.json();
+
+        const container = document.getElementById("rooms");
+        container.innerHTML = "";
+
+        for (let roomId in data) {
+          const roomDiv = document.createElement("div");
+          roomDiv.className = "room";
+
+          const title = document.createElement("h2");
+          title.textContent = `Room: ${roomId} (${data[roomId].length} users)`;
+          roomDiv.appendChild(title);
+
+          const ul = document.createElement("ul");
+          data[roomId].forEach(user => {
+            const li = document.createElement("li");
+            li.textContent = `${user.username} (${user.socketId})`;
+            ul.appendChild(li);
+          });
+
+          roomDiv.appendChild(ul);
+          container.appendChild(roomDiv);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchRooms();
+    setInterval(fetchRooms, 3000); // update every 3 seconds
+  </script>
+</body>
+</html>

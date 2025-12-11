@@ -178,7 +178,7 @@ function EditorPage() {
     const username = Location.state?.username || "Someone";
 
     try {
-      const response = await axios.post("https://coderome-apvz.onrender.com/compile", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/compile`, {
         code: codeRef.current,
         language: selectedLanguage,
       });

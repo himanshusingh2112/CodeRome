@@ -4,7 +4,7 @@ const ACTIONS = {
   JOIN: "join",
   JOINED: "joined",
   DISCONNECTED: "disconnected",
-  CODE_CHANGE: "code-change",
+  CODE_CHANGE: "conde-change",
   SYNC_CODE: "sync-code",
   LEAVE: "leave",
   SYNC_OUTPUT: "sync-output",
