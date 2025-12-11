@@ -149,8 +149,8 @@ app.post("/compile", async (req, res) => {
       script: code,
       language: language,
       versionIndex: languageConfig[language].versionIndex,
-      clientId: process.env.jDoodle_clientId,
-      clientSecret: process.env.kDoodle_clientSecret,
+      clientId: process.env.JDoodle_ClientId,
+      clientSecret: process.env.JDoodle_ClientSecret,
     });
 
     res.json(response.data);
